@@ -15,17 +15,17 @@ Expects AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY env variables to be set for 
 POST http://localhost:8080/provision/s3
 body:
 
-{ 
+```{ 
     "bucketName": "testnxio000004",
     "iamUser": "testnxio000004User",
     "region": "us-east-1"
-    
-}
+    }
+```
 
 If these are not specified, fallback on default values
 
 Returns:
-{
+```{
   "name": "testnxio000004",
   "path": "",
   "region": "us-east-1",
@@ -38,6 +38,7 @@ Returns:
   },
   "policyArn": "arn:aws:iam::188670881089:policy/nxios3policy"
 }
+```
 
 About Nuxeo
 -----------
