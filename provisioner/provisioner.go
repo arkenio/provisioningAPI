@@ -28,9 +28,9 @@ type S3Bucket struct {
 }
 
 const (
-	DEFAULT_S3IO_BUCKET_NAME             = "nxios3bucket"
-	DEFAULT_S3IO_IAMUSERNAME             = "nxios3bucket_iam"
-	DEFAULT_S3IO_ACCESSBUCKET_POLICYNAME = "nxios3policy"
+	DEFAULT_S3IO_BUCKET_NAME             = "testnxios3bucket"
+	DEFAULT_S3IO_IAMUSERNAME             = "testnxios3bucket_iam"
+	DEFAULT_S3IO_ACCESSBUCKET_POLICYNAME = "testnxios3policy"
 	DEFAULT_AWS_S3_REGION                = "us-east-1"
 	DEFAULT_AWS_S3_POLICY_TEMPLATE       = `{
     "Version": "2012-10-17",
@@ -197,7 +197,7 @@ func ProvisionBucketIfDoesntExist(session *awssession.Session, bucketName string
 	}
 
 	if err == nil && bkt != nil && bkt.Location != nil {
-		glog.Infof("Bucket %s already exists at location %s, no need to provision", bucketName, *bkt.Location)
+		glog.Infof("Provisioned bucket %s at location %s", bucketName, *bkt.Location)
 		bucket.Name = bucketName
 		bucket.Path = bucketPath
 		bucket.Region = region

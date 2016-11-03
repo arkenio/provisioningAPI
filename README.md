@@ -15,23 +15,28 @@ Expects AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY env variables to be set for 
 POST http://localhost:8080/provision/s3
 body:
 
-{ "name": "testnxio000003"}
+{ 
+    "bucketName": "testnxio000004",
+    "iamUser": "testnxio000004User",
+    "region": "us-east-1"
+    
+}
 
+If these are not specified, fallback on default values
 
 Returns:
-
-{"name":"testnxio000003","path":"","region":"us-east-1","iamUser":{"userName":"testnxio000003","userId":"AIDAJTSS7TGXVWD46JB7S","publicAccessKeyID":"AKIAIWKY24PN4UYFI24Q","publicAccessKey":"SHaZYOiSyieYcaWEsnOmwkKivcvX3ioiAX+FPZXl","arn":"arn:aws:iam::188670881089:user/testnxio000003"},"policyArn":"arn:aws:iam::188670881089:policy/nxios3policy"}{
-   "name":"testnxio000003",
-   "path":"",
-   "region":"us-east-1",
-   "iamUser":{
-      "userName":"testnxio000003",
-      "userId":"AIDAJTSS7TGXVWD46JB7S",
-      "publicAccessKeyID":"AKIAIWKY24PN4UYFI24Q",
-      "publicAccessKey":"SHaZYOiSyieYcaWEsnOmwkKivcvX3ioiAX+FPZXl",
-      "arn":"arn:aws:iam::188670881089:user/testnxio000003"
-   },
-   "policyArn":"arn:aws:iam::188670881089:policy/nxios3policy"
+{
+  "name": "testnxio000004",
+  "path": "",
+  "region": "us-east-1",
+  "iamUser": {
+    "userName": "testnxio000004User",
+    "userId": "AIDAIEAAUSHYTZOZGOUXG",
+    "publicAccessKeyID": "***",
+    "publicAccessKey": "***",
+    "arn": "arn:aws:iam::188670881089:user/testnxio000004User"
+  },
+  "policyArn": "arn:aws:iam::188670881089:policy/nxios3policy"
 }
 
 About Nuxeo
