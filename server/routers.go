@@ -1,9 +1,10 @@
 package server
 
 import (
-	"net/http"
 	"fmt"
 	"github.com/gorilla/mux"
+	"html/template"
+	"net/http"
 )
 
 type Route struct {
@@ -28,12 +29,17 @@ func NewRouter() *mux.Router {
 			Name(route.Name).
 			Handler(handler)
 	}
-
+	router.PathPrefix("/doc").Handler(http.FileServer(FS(false)))
+	router.PathPrefix("/swagger.yaml").HandlerFunc(serveSwaggerYaml)
 	return router
 }
 
 func Index(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Hello World!")
+}
+
+func SwaggerUI(w http.ResponseWriter, r *http.Request) {
+	http.FileServer(http.Dir("/tmp/static")).ServeHTTP(w, r)
 }
 
 var routes = Routes{
@@ -57,5 +63,13 @@ var routes = Routes{
 		"/provisioners",
 		ProvisionersGet,
 	},
+}
 
+func serveSwaggerYaml(w http.ResponseWriter, r *http.Request) {
+	type TemplateVars struct {
+		Host string
+	}
+	swaggerTpl := FSMustString(true, "/swagger.tpl")
+	t := template.Must(template.New("swagger").Parse(swaggerTpl))
+	t.Execute(w, &TemplateVars{r.RemoteAddr})
 }

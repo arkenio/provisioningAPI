@@ -63,11 +63,9 @@ definitions:
   S3BucketForCreation:
     type: object
     properties:
-      AWS_ACCESS_KEY_ID:
+      BucketName:
         type: string
-      AWS_SECRET_ACCESS_KEY:
-        type: string
-      Name:
+      IamUser:
         type: string
       Region:
          type: string
