@@ -12,6 +12,7 @@ ADD . $APP_DIR
 # Compile the binary and statically link
 RUN cd $APP_DIR && \
     godep update && \
+    esc -o server/static.go -prefix static -pkg server static && \
     CGO_ENABLED=0 godep restore && \
     godep go build -o s3provisioner -ldflags '-w -s'
 CMD ["src/github.com/arkenio/s3provisioner/s3provisioner"]  

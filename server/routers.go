@@ -35,11 +35,7 @@ func NewRouter() *mux.Router {
 }
 
 func Index(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello World!")
-}
-
-func SwaggerUI(w http.ResponseWriter, r *http.Request) {
-	http.FileServer(http.Dir("/tmp/static")).ServeHTTP(w, r)
+	fmt.Fprintf(w, "Hello World! go to /doc")
 }
 
 var routes = Routes{
@@ -69,7 +65,7 @@ func serveSwaggerYaml(w http.ResponseWriter, r *http.Request) {
 	type TemplateVars struct {
 		Host string
 	}
-	swaggerTpl := FSMustString(true, "/swagger.tpl")
+	swaggerTpl := FSMustString(false, "/swagger.tpl")
 	t := template.Must(template.New("swagger").Parse(swaggerTpl))
 	t.Execute(w, &TemplateVars{r.RemoteAddr})
 }
