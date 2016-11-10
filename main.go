@@ -8,5 +8,5 @@ import (
 )
 
 func main() {
-	glog.Fatal(http.ListenAndServe(":8080", server.NewRouter()))
+	glog.Fatal(http.ListenAndServe(":8788", server.NewRouter()))
 }

@@ -3,7 +3,7 @@
 *.a
 *.so
 .project
-arken
+s3provisioner
 # Folders
 _obj
 _test
@@ -22,5 +22,8 @@ _cgo_export.*
 gogeta
 tmp
 _testmain.go
-arken.yml
+s3provisioner.yml
 *.exe
+.DS_Store
+bin/
+src/

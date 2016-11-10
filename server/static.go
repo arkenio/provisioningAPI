@@ -10,6 +10,7 @@ import (
 	"path"
 	"sync"
 	"time"
+	"github.com/golang/glog"
 )
 
 type _escLocalFS struct{}
@@ -42,6 +43,7 @@ func (_escLocalFS) Open(name string) (http.File, error) {
 	if !present {
 		return nil, os.ErrNotExist
 	}
+
 	return os.Open(f.local)
 }
 
@@ -155,6 +157,7 @@ func FSByte(useLocal bool, name string) ([]byte, error) {
 		if err != nil {
 			return nil, err
 		}
+		glog.Infof("Found file %f", f);
 		return ioutil.ReadAll(f)
 	}
 	f, err := _escStatic.prepare(name)
