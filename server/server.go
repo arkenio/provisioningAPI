@@ -2,7 +2,7 @@ package server
 
 import (
 	"encoding/json"
-	provisioner "github.com/arkenio/s3provisioner/provisioner"
+	s3provisioner "github.com/arkenio/s3provisioner/provisioner"
 	//"github.com/golang/glog"
 	"net/http"
 )
@@ -21,17 +21,17 @@ func ProvisionS3Post(w http.ResponseWriter, r *http.Request) {
 
 	//TODO  should validate bucket name, IAM name and region
 
-	bucket := &provisioner.S3Bucket{}
+	bucket := &s3provisioner.S3Bucket{}
 	if provisionInfo.BucketName == "" {
-		provisionInfo.BucketName = provisioner.DEFAULT_S3IO_BUCKET_NAME
+		provisionInfo.BucketName = s3provisioner.DEFAULT_S3IO_BUCKET_NAME
 	}
 
 	if provisionInfo.IamUser == "" {
-		provisionInfo.IamUser = provisioner.DEFAULT_S3IO_IAMUSERNAME
+		provisionInfo.IamUser = s3provisioner.DEFAULT_S3IO_IAMUSERNAME
 	}
 
 	if provisionInfo.Region == "" {
-		provisionInfo.Region = provisioner.DEFAULT_AWS_S3_REGION
+		provisionInfo.Region = s3provisioner.DEFAULT_AWS_S3_REGION
 	}
 
 	bucket, err = bucket.ProvisionS3AndIAMUser(provisionInfo.IamUser, provisionInfo.Region, provisionInfo.BucketName, true)

@@ -1,4 +1,4 @@
-package provisioner
+package s3provisioner
 
 import (
 	aws "github.com/aws/aws-sdk-go/aws"
