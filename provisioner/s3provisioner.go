@@ -1,4 +1,4 @@
-package s3provisioner
+package provisioner
 
 import (
 	aws "github.com/aws/aws-sdk-go/aws"
@@ -10,6 +10,12 @@ import (
 	"github.com/golang/glog"
 	"strings"
 )
+
+type S3ProvisionInfo struct {
+	BucketName string `json:"bucketName"`
+	IamUser    string `json:"iamUser"`
+	Region     string `json:"region"`
+}
 
 type IAMUser struct {
 	UserName          string `json:"userName"`

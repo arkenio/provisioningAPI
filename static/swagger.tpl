@@ -17,8 +17,7 @@ paths:
    post:
      description :
        This provision a new s3 bucket and a new IAM user with the associated policy.
-       Expects AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY to be set as env vars or
-       to be sent in the body ( not cool)
+       Expects AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY to be set as env vars( not cool)
      parameters:
         - in: "body"
           name: "body"
@@ -31,7 +30,39 @@ paths:
          description: Sucessfuly provisioned
          schema:
             $ref: "#/definitions/S3Bucket"
-             
+  /provision/atlas:
+   post:
+     description: 
+        Provsion a new Atlas MongoDB Cluster.
+        Expects ATLAS_USERNAME, ATLAS_GROUP_ID and ATLAS_API_KEY to be set as env vars
+     parameters:
+        - in: "body"
+          name: "body"
+          description: "Service definition that has to be created"
+          required: true
+          schema:
+            $ref: "#/definitions/AtlasClusterForCreation"
+     responses:
+       200:
+         description: Sucessfuly provisioned
+         schema:
+            $ref: "#/definitions/AtlasMongoDbCluster"
+  /provision/atlas/{clusterName}:
+   get:
+    description: |
+        Gets an existing cluster.
+         Expects ATLAS_USERNAME, ATLAS_GROUP_ID and ATLAS_API_KEY to be set as env vars.
+    parameters:
+        - name: clusterName
+          in: path
+          required: true
+          type: string
+    responses:
+       200:
+         description: Returns the cluster
+         schema:
+            $ref: "#/definitions/AtlasMongoDbCluster"            
+   
        
   # This is a path endpoint. Change it.
   /provisioners:
@@ -93,4 +124,76 @@ definitions:
          type: string 
       Arn:
          type: string
-                  
+  AtlasClusterForCreation:
+    type: object
+    properties:
+      Name:
+        type: string
+      BackupEnabled:
+        type: boolean
+      IP:
+        type: string
+      DBName:
+        type: string
+      ProviderSettings:
+        $ref: '#/definitions/AtlastProviderSettingsForCreation'
+    example:
+        Name: testprovisioning1
+        BackupEnabled: true
+        IP: 0.0.0.0
+        DBName: nuxeo1
+        ProviderSettings:
+            InstanceSizeName: M10
+            ProviderName: AWS
+            RegionName: US_EAST_1
+  AtlastProviderSettingsForCreation:
+    type: object
+    properties:
+      InstanceSizeName:
+        type: string
+      ProviderName:
+        type: string
+      RegionName:
+        type: string
+    example:
+      InstanceSizeName: M10
+      ProviderName: AWS
+      RegionName: US_EAST_1
+  AtlastProviderSettings:
+    type: object
+    properties:
+      instanceSizeName:
+        type: string
+      providerName:
+        type: string
+      regionName:
+        type: string
+      diskIOPS:
+         type: integer
+      encryptEBSVolume:
+         type: boolean
+  AtlasMongoDbCluster:
+    type: object
+    properties:
+      name:
+        type: string
+      groupId:
+        type: string
+      mongoDBVersion:
+        type: string
+      mongoURI:
+         type: string 
+      mongoURIUpdated:
+         type: string
+      numShards:
+         type: integer
+      replicationFactor:
+         type: integer
+      providerSettings:   
+         $ref: '#/definitions/AtlastProviderSettings'
+      diskSizeGB:
+          type: integer
+      backupEnabled:
+          type: boolean
+      stateName:
+          type: string

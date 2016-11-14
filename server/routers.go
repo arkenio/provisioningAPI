@@ -54,6 +54,20 @@ var routes = Routes{
 	},
 
 	Route{
+		"ProvisionAtlasPost",
+		"POST",
+		"/provision/atlas",
+		ProvisionAtlasPost,
+	},
+	
+	Route{
+		"ProvisionAtlasGetCluster",
+		"GET",
+		"/provision/atlas/{clusterName}",
+		ProvisionAtlasGetCluster,
+	},
+
+	Route{
 		"ProvisionersGet",
 		"GET",
 		"/provisioners",
