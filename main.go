@@ -10,6 +10,5 @@ import (
 
 func main() {
 	viper.AutomaticEnv()          // read in environment variables that match
-	glog.Infof("ss %s", viper.GetString("ATLAS_USERNAME"));
 	glog.Fatal(http.ListenAndServe(":8788", server.NewRouter()))
 }

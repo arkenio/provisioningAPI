@@ -237,11 +237,10 @@ func (bucket *S3Bucket) ProvisionS3AndIAMUser(username string, region string, bu
 	glog.Infof("Provisioning in %s", region)
 	//expects AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY env variables to be set
 	session := awssession.New(&aws.Config{Region: aws.String(region), Credentials: cred.NewEnvCredentials()})
-
 	iamUser, err := ProvisionIAMUserIfDoesntExist(session, username, configNewAccessKey)
 	if err != nil {
 		glog.Error("Failed to provision or fetch existing IAM user %v", err)
-		return nil, nil
+		return nil, err
 	}
 	glog.Infof("IAM user %v provisioned", iamUser)
 

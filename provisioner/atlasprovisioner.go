@@ -34,6 +34,25 @@ type AtlasMongoDBCluster struct {
 	ProviderSettings  *AtlasProviderSettingsInfo `json:"providerSettings"`
 }
 
+type MongoDbProvisionInfo struct {
+	DatabaseName string            `json:"databaseName"`
+	Roles        []MongoDbUserRole `json:"roles"`
+	Username     string            `json:"username"`
+	Password     string            `json:"password"`
+}
+
+type MongoDbUserRole struct {
+	DatabaseName string `json:"databaseName"`
+	RoleName     string `json:"roleName"`
+}
+
+type MongoDBUser struct {
+	Username     string            `json:"username"`
+	GroupId      string            `json:"groupId"`
+	Roles        []MongoDbUserRole `json:"roles"`
+	DatabaseName string            `json:"databaseName"`
+}
+
 func AtlasClient(username string, apiKey string) (*atlas.Client, error) {
 	client := atlas.NewClient(username, apiKey)
 	glog.Infof("[INFO] MongoDB Atlas client configured")
@@ -62,6 +81,7 @@ func NewCluster(client *atlas.Client, groupID string, newClusterInfo *AtlasClust
 	if err != nil {
 		return nil, err
 	}
+	glog.Errorf("Req body %s", reqBody)
 	mogoCluster := new(AtlasMongoDBCluster)
 	_, err = client.Do(req, mogoCluster)
 
@@ -110,4 +130,45 @@ func GetCluster(client *atlas.Client, groupID string, clusterName string) (*Atla
 		return nil, err
 	}
 	return mogoCluster, nil
+}
+
+func NewMongoDbUser(client *atlas.Client, groupID string, newMongoDbUserInfo *MongoDbProvisionInfo) (*MongoDBUser, error) {
+
+	path := fmt.Sprintf("groups/%s/databaseUsers/", groupID)
+	roles := make([]MongoDbUserRole, 0)
+	roles = append(roles, MongoDbUserRole{newMongoDbUserInfo.DatabaseName, "readWrite"})
+	newMongoDbUserInfo.DatabaseName = "admin"
+	newMongoDbUserInfo.Roles = roles
+
+	reqBody := newMongoDbUserInfo
+
+	req, err := client.NewRequest("POST", path, reqBody)
+	if err != nil {
+		return nil, err
+	}
+	mogoDbUser := new(MongoDBUser)
+	_, err = client.Do(req, mogoDbUser)
+
+	if err != nil {
+		glog.Infof("Error while trying to provision user: %v", err)
+		return nil, err
+	}
+	return mogoDbUser, nil
+}
+
+func GetMongoDbUser(client *atlas.Client, groupID string, username string) (*MongoDBUser, error) {
+
+	path := fmt.Sprintf("groups/%s/databaseUsers/admin/%s", groupID, username)
+	req, err := client.NewRequest("GET", path, "")
+	if err != nil {
+		return nil, err
+	}
+	mogoDbUser := new(MongoDBUser)
+	_, err = client.Do(req, mogoDbUser)
+
+	if err != nil {
+		glog.Infof("Error while trying to fetch user: %v", err)
+		return nil, err
+	}
+	return mogoDbUser, nil
 }

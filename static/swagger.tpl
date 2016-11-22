@@ -30,7 +30,7 @@ paths:
          description: Sucessfuly provisioned
          schema:
             $ref: "#/definitions/S3Bucket"
-  /provision/atlas:
+  /provision/atlas/clusters:
    post:
      description: 
         Provsion a new Atlas MongoDB Cluster.
@@ -47,7 +47,7 @@ paths:
          description: Sucessfuly provisioned
          schema:
             $ref: "#/definitions/AtlasMongoDbCluster"
-  /provision/atlas/{clusterName}:
+  /provision/atlas/clusters/{clusterName}:
    get:
     description: |
         Gets an existing cluster.
@@ -62,7 +62,37 @@ paths:
          description: Returns the cluster
          schema:
             $ref: "#/definitions/AtlasMongoDbCluster"            
-   
+  /provision/atlas/users:
+   post:
+     description: 
+        Provsion a new Atlas MongoDB User for any cluster in the group for the given database
+     parameters:
+        - in: "body"
+          name: "body"
+          description: "The name/password of the user and the name of the database"
+          required: true
+          schema:
+            $ref: "#/definitions/MongoDbUserForCreation"
+     responses:
+       200:
+         description: Sucessfuly provisioned
+         schema:
+            $ref: "#/definitions/MongoDBUser"
+  /provision/atlas/users/{userName}:
+   get:
+    description: |
+        Gets an existing MongoDb user.
+         Expects ATLAS_USERNAME, ATLAS_GROUP_ID and ATLAS_API_KEY to be set as env vars.
+    parameters:
+        - name: userName
+          in: path
+          required: true
+          type: string
+    responses:
+       200:
+         description: Returns the mongoDb user
+         schema:
+            $ref: "#/definitions/MongoDBUser"           
        
   # This is a path endpoint. Change it.
   /provisioners:
@@ -131,17 +161,11 @@ definitions:
         type: string
       BackupEnabled:
         type: boolean
-      IP:
-        type: string
-      DBName:
-        type: string
       ProviderSettings:
         $ref: '#/definitions/AtlastProviderSettingsForCreation'
     example:
         Name: testprovisioning1
         BackupEnabled: true
-        IP: 0.0.0.0
-        DBName: nuxeo1
         ProviderSettings:
             InstanceSizeName: M10
             ProviderName: AWS
@@ -197,3 +221,34 @@ definitions:
           type: boolean
       stateName:
           type: string
+  MongoDbUserForCreation:
+    type: object
+    properties:
+      username:
+        type: string
+      databaseName:
+        type: string
+      password:
+        type: string  
+    example:
+      username: testprovisioning
+      databaseName: nuxeo
+      password: nuxeo
+  MongoDBUser:
+    type: object
+    properties:
+      databaseName:
+        type: string
+      groupId:
+        type: string
+      username:
+        type: string
+      roles:
+        type: array
+        items:
+          type: object
+          properties:
+           databaseName:
+             type: string
+           roleName:
+              type: string

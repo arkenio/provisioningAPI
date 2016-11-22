@@ -40,6 +40,9 @@ Returns:
 }
 ```
 
+### Provision an AtlasMongoDB cluster and a dedicated MongoDB user for the database
+Expects ATLAS_USERNAME, ATLAS_API_KEY and ATLAS_GROUP_ID to set as env variables
+
 About Nuxeo
 -----------
 
