@@ -26,17 +26,16 @@ type IAMUser struct {
 }
 
 type S3Bucket struct {
-	Name      string `json:"name"`
-	Path      string `json:"path"`
-	Region    string `json:"region,omitempty""`
-	IamUser   *IAMUser `json:"iamUser""`
-	PolicyArn string `json:"policyArn""`
+	Name    string   `json:"name"`
+	Path    string   `json:"path"`
+	Region  string   `json:"region,omitempty""`
+	IamUser *IAMUser `json:"iamUser""`
 }
 
 const (
 	DEFAULT_S3IO_BUCKET_NAME             = "testnxios3bucket"
 	DEFAULT_S3IO_IAMUSERNAME             = "testnxios3bucket_iam"
-	DEFAULT_S3IO_ACCESSBUCKET_POLICYNAME = "testnxios3policy"
+	DEFAULT_S3IO_ACCESSBUCKET_POLICYNAME = "nxios3policy"
 	DEFAULT_AWS_S3_REGION                = "us-east-1"
 	DEFAULT_AWS_S3_POLICY_TEMPLATE       = `{
     "Version": "2012-10-17",
@@ -144,42 +143,20 @@ func ProvisionIAMUserIfDoesntExist(session *awssession.Session, userName string,
 
 func AttachS3BucketPolicyToIAMUser(session *awssession.Session, bucket *S3Bucket, iamUser *IAMUser) (*S3Bucket, error) {
 
+	policyName := DEFAULT_S3IO_ACCESSBUCKET_POLICYNAME //at this point we could configure an user to access multiple buckets if 
+	// the policy name would depend on the bucket
 	svcIam := iam.New(session)
 	user_policy := strings.Replace(DEFAULT_AWS_S3_POLICY_TEMPLATE, "{bucket}", bucket.Name, -1)
 	user_policy = strings.Replace(user_policy, "/{path}", bucket.Path, -1)
 
-	res, err := svcIam.CreatePolicy(&iam.CreatePolicyInput{
+	_, err := svcIam.PutUserPolicy(&iam.PutUserPolicyInput{
 		PolicyDocument: aws.String(user_policy),
-		PolicyName:     aws.String(DEFAULT_S3IO_ACCESSBUCKET_POLICYNAME),
-	})
-	if err == nil {
-		bucket.PolicyArn = *res.Policy.Arn
-	}
-
-	if err != nil && err.(awserr.Error).Code() == "EntityAlreadyExists" {
-		//policy alreday exists
-		//it might be already attached to this user
-		userpolicies, err := svcIam.ListPolicies(&iam.ListPoliciesInput{})
-		if err != nil {
-			return bucket, err
-		}
-		for _, policy := range userpolicies.Policies {
-
-			if *policy.PolicyName == DEFAULT_S3IO_ACCESSBUCKET_POLICYNAME {
-				bucket.PolicyArn = *policy.Arn
-				break
-			}
-		}
-	}
-	//should not break even already attached
-	_, err = svcIam.AttachUserPolicy(&iam.AttachUserPolicyInput{
-		PolicyArn: aws.String(bucket.PolicyArn),
-		UserName:  aws.String(iamUser.UserName),
+		PolicyName:     aws.String(policyName),
+		UserName:       aws.String(iamUser.UserName),
 	})
 
 	if err != nil {
-		glog.Errorf("Failed to attach policy: %s to user: %s, with error %v", bucket.PolicyArn, bucket.IamUser.UserName, err)
-		return bucket, err
+		glog.Errorf("Cloud not put/ update policy, %v", err)
 	}
 
 	return bucket, nil

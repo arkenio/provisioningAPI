@@ -16,42 +16,53 @@ paths:
   /provision/s3:
    post:
      description :
-       This provision a new s3 bucket and a new IAM user with the associated policy.
-       Expects AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY to be set as env vars( not cool)
+       Provisions a new s3 bucket and a new IAM user with the associated policy.
+       Expects AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY to be set as ENV vars (not cool).
+       To configure Nuxeo to use your provisioned resources use
+       nuxeo.s3storage.bucket=$name, 
+       nuxeo.s3storage.awsid=$publicAccessKeyID,
+       nuxeo.s3storage.awssecret=$publicAccessKey
+       
      parameters:
         - in: "body"
           name: "body"
-          description: "Service definition that has to be created"
+          description: "Specify a bucket name and an IAM username that will be provision to access this bucket. If no region is specified, the bucket is created in 'us-east-1'"
           required: true
           schema:
             $ref: "#/definitions/S3BucketForCreation"
      responses:
        200:
-         description: Sucessfuly provisioned
+         description: Sucessfuly provisioned. Returns the provisioned bucket and user.
          schema:
             $ref: "#/definitions/S3Bucket"
   /provision/atlas/clusters:
    post:
      description: 
-        Provsion a new Atlas MongoDB Cluster.
-        Expects ATLAS_USERNAME, ATLAS_GROUP_ID and ATLAS_API_KEY to be set as env vars
+        Provsions a new Atlas MongoDB Cluster.
+        Expects ATLAS_USERNAME, ATLAS_GROUP_ID and ATLAS_API_KEY to be set as ENV vars.
+        You must provision a new cluster and a new mongoDb user. To configure Nuxeo to use
+        your provisioned resources use
+        nuxeo.mongodb.dbname=$dbname and 
+        nuxeo.mongodb.server= $mongoURI ( and modify the returned mongoURI to insert your user and password as "mongodb://user:password@cluster...."
+      
      parameters:
         - in: "body"
           name: "body"
-          description: "Service definition that has to be created"
+          description: "Cluster to be created, as in https://docs.atlas.mongodb.com/reference/api/clusters/#sample-entity"
           required: true
           schema:
             $ref: "#/definitions/AtlasClusterForCreation"
      responses:
        200:
-         description: Sucessfuly provisioned
+         description: Sucessfuly provisioned. Returns back the cluster and its status. The value for $mongoURI is returned only after the cluster has been created ( StateName is IDLE) 
          schema:
             $ref: "#/definitions/AtlasMongoDbCluster"
   /provision/atlas/clusters/{clusterName}:
    get:
     description: |
         Gets an existing cluster.
-         Expects ATLAS_USERNAME, ATLAS_GROUP_ID and ATLAS_API_KEY to be set as env vars.
+         Expects ATLAS_USERNAME, ATLAS_GROUP_ID and ATLAS_API_KEY to be set as Env vars.
+         The value for $mongoURI is returned only after the cluster has been created ( StateName is IDLE) 
     parameters:
         - name: clusterName
           in: path
@@ -59,13 +70,37 @@ paths:
           type: string
     responses:
        200:
-         description: Returns the cluster
+         description: Returns the cluster. The connection string to be used to connect to Nuxeo is the MonogoURI value.
          schema:
-            $ref: "#/definitions/AtlasMongoDbCluster"            
+            $ref: "#/definitions/AtlasMongoDbCluster"
+            
+   put:
+     description: 
+        Modifies an existing Atlas MongoDB Cluster.
+        Expects ATLAS_USERNAME, ATLAS_GROUP_ID and ATLAS_API_KEY to be set as env vars
+     parameters:
+        - name: clusterName
+          in: path
+          required: true
+          type: string
+        - in: "body"
+          name: "body"
+          description: "Cluster to be modified, as in https://docs.atlas.mongodb.com/reference/api/clusters/#sample-entity"
+          required: true
+          schema:
+            $ref: "#/definitions/AtlasClusterForCreation"
+     responses:
+       200:
+         description: Sucessfuly modified. Returns the cluster and its state.
+         schema:
+            $ref: "#/definitions/AtlasMongoDbCluster"
   /provision/atlas/users:
    post:
      description: 
-        Provsion a new Atlas MongoDB User for any cluster in the group for the given database
+         Provisions a new Atlas MongoDB User, for any cluster in the group for the given
+         database. This user will have the role readWrite@databaseName. Since this user
+         has these permissions across all databases called 'databaseName' in all clusters in the current group, make sure you provision an unique database name for every database within the same cluster. These must be used along with the MongoURI to
+           to connect.
      parameters:
         - in: "body"
           name: "body"
@@ -75,14 +110,14 @@ paths:
             $ref: "#/definitions/MongoDbUserForCreation"
      responses:
        200:
-         description: Sucessfuly provisioned
+         description: Sucessfuly provisioned. Returns the mongoDb user and its roles.
          schema:
             $ref: "#/definitions/MongoDBUser"
   /provision/atlas/users/{userName}:
    get:
     description: |
         Gets an existing MongoDb user.
-         Expects ATLAS_USERNAME, ATLAS_GROUP_ID and ATLAS_API_KEY to be set as env vars.
+         Expects ATLAS_USERNAME, ATLAS_GROUP_ID and ATLAS_API_KEY to be set as ENV vars.
     parameters:
         - name: userName
           in: path
@@ -90,7 +125,7 @@ paths:
           type: string
     responses:
        200:
-         description: Returns the mongoDb user
+         description: Returns the mongoDb user and its roles.
          schema:
             $ref: "#/definitions/MongoDBUser"           
        

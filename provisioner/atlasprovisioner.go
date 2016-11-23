@@ -89,30 +89,6 @@ func NewCluster(client *atlas.Client, groupID string, newClusterInfo *AtlasClust
 		glog.Infof("Error while trying to provision server %v", err)
 		return nil, err
 	}
-	/**
-	Sample response from the server:
-	{
-	 "backupEnabled":true,
-	 "diskSizeGB":40,
-	 "groupId":"57d8232ed383ad6a442810bb",
-	 "links":[{"href":"https://cloud.mongodb.com/api/atlas/v1.0/groups/57d8232ed383ad6a442810bb/clusters/testprovisioning5","rel":"self"}],
-	 "mongoDBMajorVersion":"3.2",
-	 "mongoDBVersion":"3.2.10",
-	 "mongoURIUpdated":"2016-11-13T23:26:06Z"
-	 ,"name":"testprovisioning5",
-	 "numShards":1,
-	 "providerSettings":
-	     {
-	      "providerName":"AWS",
-	      "diskIOPS":120,
-	      "encryptEBSVolume":false,
-	      "instanceSizeName":"M10",
-	      "regionName":"US_EAST_1"
-	      },
-	 "replicationFactor":3,
-	 "stateName":"CREATING"}
-	**/
-
 	return mogoCluster, nil
 }
 
@@ -127,6 +103,24 @@ func GetCluster(client *atlas.Client, groupID string, clusterName string) (*Atla
 
 	if err != nil {
 		glog.Infof("Error while tryin to fetch cluster %v %s", err)
+		return nil, err
+	}
+	return mogoCluster, nil
+}
+
+func ModifyCluster(client *atlas.Client, groupID string,  clusterName string, newClusterInfo *AtlasClusterProvisionInfo) (*AtlasMongoDBCluster, error) {
+	path := fmt.Sprintf("groups/%s/clusters/%s", groupID, clusterName)
+	reqBody := newClusterInfo
+	req, err := client.NewRequest("PATCH", path, reqBody)
+	if err != nil {
+		return nil, err
+	}
+	glog.Errorf("Req body %s", reqBody)
+	mogoCluster := new(AtlasMongoDBCluster)
+	_, err = client.Do(req, mogoCluster)
+
+	if err != nil {
+		glog.Infof("Error while trying to provision server %v", err)
 		return nil, err
 	}
 	return mogoCluster, nil

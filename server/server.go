@@ -28,7 +28,7 @@ func ProvisionS3Post(w http.ResponseWriter, r *http.Request) {
 	if provisionInfo.Region == "" {
 		provisionInfo.Region = provisioner.DEFAULT_AWS_S3_REGION
 	}
-	
+
 	w.Header().Add("Content-Type", "application/json")
 	bucket, err = bucket.ProvisionS3AndIAMUser(provisionInfo.IamUser, provisionInfo.Region, provisionInfo.BucketName, true)
 	if err != nil {
@@ -84,6 +84,32 @@ func ProvisionAtlasGetCluster(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := json.NewEncoder(w).Encode(mongoCluster); err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+	return
+}
+
+func ProvisionAtlasClusterPut(w http.ResponseWriter, r *http.Request) {
+
+	clusterName := mux.Vars(r)["clusterName"]
+	decoder := json.NewDecoder(r.Body)
+	provisionInfo := &provisioner.AtlasClusterProvisionInfo{}
+	err := decoder.Decode(provisionInfo)
+
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+	}
+
+	client, err := provisioner.AtlasClient(viper.GetString("ATLAS_USERNAME"), viper.GetString("ATLAS_API_KEY"))
+	w.Header().Add("Content-Type", "application/json")
+	atlastCluster, err := provisioner.ModifyCluster(client, viper.GetString("ATLAS_GROUP_ID"), clusterName, provisionInfo)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+	err = json.NewEncoder(w).Encode(atlastCluster)
+	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}

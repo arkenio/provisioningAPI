@@ -66,19 +66,28 @@ var routes = Routes{
 		"/provision/atlas/clusters/{clusterName}",
 		ProvisionAtlasGetCluster,
 	},
+
 	Route{
 		"ProvisionAtlasMongoUserPost",
 		"POST",
 		"/provision/atlas/users",
 		ProvisionAtlasMongoUserPost,
 	},
-		Route{
+
+	Route{
 		"ProvisionAtlasGetMongoDbUser",
 		"GET",
 		"/provision/atlas/users/{userName}",
 		ProvisionAtlasGetMongoDbUser,
 	},
-	
+
+	Route{
+		"ProvisionAtlasClusterPut",
+		"PUT",
+		"/provision/atlas/clusters/{clusterName}",
+		ProvisionAtlasClusterPut,
+	},
+
 	Route{
 		"ProvisionersGet",
 		"GET",
