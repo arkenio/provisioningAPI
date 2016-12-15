@@ -88,7 +88,7 @@ paths:
           description: "Cluster to be modified, as in https://docs.atlas.mongodb.com/reference/api/clusters/#sample-entity"
           required: true
           schema:
-            $ref: "#/definitions/AtlasClusterForCreation"
+            $ref: "#/definitions/AtlasClusterForUpdate"
      responses:
        200:
          description: Sucessfuly modified. Returns the cluster and its state.
@@ -214,10 +214,50 @@ definitions:
         type: string
       RegionName:
         type: string
+      DiskIOPS:
+        type: integer
+      EncryptEBSVolume:
+        type: boolean
     example:
       InstanceSizeName: M10
       ProviderName: AWS
       RegionName: US_EAST_1
+      DiskIOPS: 120
+      EncryptEBSVolume: true
+  AtlastProviderSettingsForUpdate:
+    type: object
+    properties:
+      InstanceSizeName:
+        type: string
+      DiskIOPS:
+        type: integer
+      EncryptEBSVolume:
+        type: boolean  
+    example:
+      InstanceSizeName: M20
+      DiskIOPS: 120
+      EncryptEBSVolume: true
+  AtlasClusterForUpdate:
+    type: object
+    properties:
+      BackupEnabled:
+        type: boolean
+      NumShards:
+        type: integer
+      ReplicationFactor:
+        type: integer
+      DiskSizeGB:
+        type: integer
+      ProviderSettings:
+        $ref: '#/definitions/AtlastProviderSettingsForUpdate'
+    example:
+        BackupEnabled: true
+        NumShards: 1
+        ReplicationFactor: 3
+        DiskSizeGB: 70
+        ProviderSettings:
+            InstanceSizeName: M20
+            ProviderName: AWS
   AtlastProviderSettings:
     type: object
     properties:

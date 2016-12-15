@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/arkenio/s3provisioner/server"
+	"github.com/arkenio/provisioningAPI/server"
 	"github.com/golang/glog"
 	"github.com/spf13/viper"
 	//"html"

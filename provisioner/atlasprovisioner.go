@@ -3,34 +3,36 @@ package provisioner
 import (
 	//"encoding/json"
 	"fmt"
+	"github.com/arkenio/provisioningAPI/go-mongodb/atlas"
 	"github.com/golang/glog"
-	"github.com/heimweh/go-mongodb/atlas"
 	"time"
 )
 
 type AtlasProviderSettingsInfo struct {
-	InstanceSizeName string `json:"instanceSizeName"`
+	InstanceSizeName string `json:"instanceSizeName,omitempty"`
 	ProviderName     string `json:"providerName"`
-	RegionName       string `json:"regionName"`
+	RegionName       string `json:"regionName,omitempty"`
+	DiskIOPS         int32 `json:"diskIOPS,omitempty"`
+	EncryptEBSVolume bool `json:"encryptEBSVolume,omitempty"`
 }
 
 type AtlasClusterProvisionInfo struct {
-	Name             string                     `json:"name"`
+	Name             string                     `json:"name,omitempty"`
 	BackupEnabled    bool                       `json:"backupEnabled"`
 	ProviderSettings *AtlasProviderSettingsInfo `json:"providerSettings"`
 }
 
 type AtlasMongoDBCluster struct {
-	Name              string                     `json:"name"`
+	Name              string                     `json:"name,omitempty"`
 	GroupId           string                     `json:"groupId"`
-	MongoDBVersion    string                     `json:"mongoDBVersion"`
-	MongoURI          string                     `json:"mongoURI"`
-	MongoURIUpdated   time.Time                  `json:"mongoURIUpdated"`
-	NumShards         int32                      `json:"numShards"`
-	ReplicationFactor int32                      `json:"replicationFactor"`
-	DiskSizeGB        int32                      `json:"diskSizeGB"`
-	BackupEnabled     bool                       `json:"backupEnabled"`
-	StateName         string                     `json:"stateName"`
+	MongoDBVersion    string                     `json:"mongoDBVersion,omitempty"`
+	MongoURI          string                     `json:"mongoURI,omitempty"`
+	MongoURIUpdated   time.Time                  `json:"mongoURIUpdated,omitempty"`
+	NumShards         int32                      `json:"numShards,omitempty"`
+	ReplicationFactor int32                      `json:"replicationFactor,omitempty"`
+	DiskSizeGB        int32                      `json:"diskSizeGB,omitempty"`
+	BackupEnabled     bool                       `json:"backupEnabled,omitempty"`
+	StateName         string                     `json:"stateName,omitempty"`
 	ProviderSettings  *AtlasProviderSettingsInfo `json:"providerSettings"`
 }
 
@@ -108,14 +110,14 @@ func GetCluster(client *atlas.Client, groupID string, clusterName string) (*Atla
 	return mogoCluster, nil
 }
 
-func ModifyCluster(client *atlas.Client, groupID string,  clusterName string, newClusterInfo *AtlasClusterProvisionInfo) (*AtlasMongoDBCluster, error) {
+func ModifyCluster(client *atlas.Client, groupID string, clusterName string, newClusterInfo *AtlasClusterProvisionInfo) (*AtlasMongoDBCluster, error) {
 	path := fmt.Sprintf("groups/%s/clusters/%s", groupID, clusterName)
 	reqBody := newClusterInfo
+	glog.Errorf("Req body %s", reqBody)
 	req, err := client.NewRequest("PATCH", path, reqBody)
 	if err != nil {
 		return nil, err
 	}
-	glog.Errorf("Req body %s", reqBody)
 	mogoCluster := new(AtlasMongoDBCluster)
 	_, err = client.Do(req, mogoCluster)
 

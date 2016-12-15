@@ -2,7 +2,7 @@ package server
 
 import (
 	"encoding/json"
-	provisioner "github.com/arkenio/s3provisioner/provisioner"
+	provisioner "github.com/arkenio/provisioningAPI/provisioner"
 	//"github.com/golang/glog"
 	"github.com/gorilla/mux"
 	"github.com/spf13/viper"
@@ -56,12 +56,11 @@ func ProvisionAtlasClusterPost(w http.ResponseWriter, r *http.Request) {
 	atlastCluster, err := provisioner.NewCluster(client, viper.GetString("ATLAS_GROUP_ID"), provisionInfo)
 
 	w.Header().Add("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(atlastCluster); err != nil {
+	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
-
-	if err != nil {
+	if err := json.NewEncoder(w).Encode(atlastCluster); err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}

@@ -194,10 +194,6 @@
 			"Rev": "2604f3bda7e8960c1be1063709e7d7f0765048d0"
 		},
 		{
-			"ImportPath": "github.com/heimweh/go-mongodb/atlas",
-			"Rev": "a36b89ef26edb34a90ef69079dae4cea0eae97c7"
-		},
-		{
 			"ImportPath": "github.com/jmespath/go-jmespath",
 			"Comment": "0.2.2-14-gbd40a43",
 			"Rev": "bd40a432e4c76585ef6b72d3fd96fb9b6dc7b68d"
