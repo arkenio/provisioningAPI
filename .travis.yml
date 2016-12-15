@@ -10,7 +10,7 @@ services:
   - docker
 
 before_install:
-  - if [["$BUILDTYPE"=="go"]]; then go get github.com/tools/godep
+  - if [ "$BUILDTYPE" == 'go' ]; then go get github.com/tools/godep || travis_terminate 1; fi
 script:
-  -if [["$BUILDTYPE"=="go"]]; then godep restore && godep go build
-  -if [["$BUILDTYPE"=="docker"]]; then docker build -t arkenio/provisioningAPI:v1 .
+  - if [ "$BUILDTYPE" == 'go' ]; then godep restore && godep go build || travis_terminate 1; fi
+  - if [ "$BUILDTYPE" == 'docker' ]; then docker build -t arkenio/provisioner:v1 . || travis_terminate 1; fi
