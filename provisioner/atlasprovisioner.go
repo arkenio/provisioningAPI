@@ -28,9 +28,9 @@ type AtlasMongoDBCluster struct {
 	MongoDBVersion    string                     `json:"mongoDBVersion,omitempty"`
 	MongoURI          string                     `json:"mongoURI,omitempty"`
 	MongoURIUpdated   time.Time                  `json:"mongoURIUpdated,omitempty"`
-	NumShards         int32                      `json:"numShards,omitempty"`
-	ReplicationFactor int32                      `json:"replicationFactor,omitempty"`
-	DiskSizeGB        int32                      `json:"diskSizeGB,omitempty"`
+	NumShards         float32                      `json:"numShards,omitempty"`
+	ReplicationFactor float32                      `json:"replicationFactor,omitempty"`
+	DiskSizeGB        float32                      `json:"diskSizeGB,omitempty"`
 	BackupEnabled     bool                       `json:"backupEnabled,omitempty"`
 	StateName         string                     `json:"stateName,omitempty"`
 	ProviderSettings  *AtlasProviderSettingsInfo `json:"providerSettings"`
@@ -103,6 +103,7 @@ func GetCluster(client *atlas.Client, groupID string, clusterName string) (*Atla
 	mogoCluster := new(AtlasMongoDBCluster)
 	_, err = client.Do(req, mogoCluster)
 
+	
 	if err != nil {
 		glog.Infof("Error while tryin to fetch cluster %v %s", err)
 		return nil, err
